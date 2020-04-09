@@ -23,17 +23,38 @@ const stream = require('stream');
 let timeSeriesNeuralRoute =
 {
   
-    
-
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+        // Function name: importSessionJSON
+        // accept argument: accept file location name through req.body or req.query
+        // and return argument: return is in this format: {status: 200,statusDesc:"succesful",data:container,message: 'Unable to populate record into the destination table'};
+        // What the method deos: this method accept file location address, fecths the file from location, validation the file
+                                // and read through the file line by line. In the process reading lines, transform the line and it calls postgresql 
+                                //insert query which insert data into the table (sessiontables)
     importSessionJSON:  async function(req, res) 
     { 
       
+        // java equivalent generic class
         var container = new Container();
+
+        var fileName="";
+
+        if(Object.entries(req.body).length !== 0)
+        {
+            
+            fileName = req.body.fileName;
+        }
+        else if(Object.entries(req.query).length !== 0)
+        {
+            
+            fileName = req.query.fileName;
+        }
 
         try
         {
             var insertSessions=null;
             
+            // accept stream as input and reads the stream line by line
             function readLines({ input }) 
             {
                     
@@ -58,8 +79,9 @@ let timeSeriesNeuralRoute =
                 return output;
               
             }
-              
-            let input = await fs.createReadStream(req.body.fileName);
+            
+            // accept file and convert the file into streams
+            let input = await fs.createReadStream(fileName);
                 
             let result =  await (async () => 
             {
@@ -96,7 +118,8 @@ let timeSeriesNeuralRoute =
                     session.setRecordingStartTime(sessionObject["Recording start time"]);
 
                     
-                    
+                    // accept object created from lines or line values read and call sequelize model Sessions. the create method
+                    // of the model insert the object into sessiontables in postgresql
                     return await Sessions.create(session).then(returnedSession => 
                     {
                               
@@ -175,12 +198,18 @@ let timeSeriesNeuralRoute =
     },
 
     
-  
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+        // Function name: importGPIOCSV
+        // accept argument: accept file location name through req.body or req.query
+        // and return argument: return is in this format: {status: 200,statusDesc:"succesful",data:container,message: 'Unable to populate record into the destination table'};
+        // What the method deos: this method accept file location address, fecths the file from location, validation the file
+                                // and read through the file line by line. In the process reading lines, transform the line and it calls postgresql 
+                                //insert query which insert data into the table (gpiostables)
     importGPIOCSV:async function(req,res)
     {
+        //Java equivalent generic class
         let container = new Container();
-
-       
 
         try
         {
@@ -193,7 +222,7 @@ let timeSeriesNeuralRoute =
             });
 
             
-           
+            // accept stream as input and reads the stream line by line
             function readLines({ input }) 
             {
                     
@@ -219,6 +248,7 @@ let timeSeriesNeuralRoute =
               
             }
               
+            // accept file and convert the file into streams
             let input = await fs.createReadStream(req.body.fileName);
                 
             await (async () => 
@@ -240,7 +270,7 @@ let timeSeriesNeuralRoute =
 
                 var isError=false;
 
-                var genericObject=null;
+                
                 
                 for (let index = 0; index < allLinesRead.length && !isError; index++) 
                 {
@@ -253,7 +283,8 @@ let timeSeriesNeuralRoute =
                     gpio.setCellColumnId(index); 
                  
 
-                    
+                    // accept object created from lines or line values read and call sequelize model GPIOS. the create method
+                    // of the model insert the object into gpiostables in postgresql
                     await GPIOs.create(gpio).then(returnedGpio => 
                     {
                       
@@ -312,8 +343,17 @@ let timeSeriesNeuralRoute =
        
     },
 
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+        // Function name: importCellsCSV
+        // accept argument: accept file location name through req.body or req.query
+        // and return argument: return is in this format: {status: 200,statusDesc:"succesful",data:container,message: 'Unable to populate record into the destination table'};
+        // What the method deos: this method accept file location address, fecths the file from location, validation the file
+                                // and read through the file line by line. In the process reading lines, transform the line and it calls postgresql 
+                                //insert query which insert data into the table (cellstables)
     importCellCSV:async function(req,res)
     {
+        //Java equivalent generic class
         let container = new Container();
       
         try
@@ -328,7 +368,7 @@ let timeSeriesNeuralRoute =
             });
 
             
-           
+            // accept stream as input and reads the stream line by line
             function readLines({ input }) 
             {
                     
@@ -353,7 +393,8 @@ let timeSeriesNeuralRoute =
                 return output;
               
             }
-              
+            
+            // accept file and convert the file into streams
             let input = await fs.createReadStream(req.body.fileName);
                 
             let result =   await (async () => 
@@ -393,6 +434,8 @@ let timeSeriesNeuralRoute =
 
                         cell.setFrames(splitterLine[j]);
 
+                        // accept object created from lines or line values read and call sequelize model Cells. the create method
+                        // of the model insert the object into cellstables in postgresql
                         await Cells.create(cell).then(returnedCell => 
                         {
                               
@@ -461,13 +504,23 @@ let timeSeriesNeuralRoute =
 
     },
 
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+        // Function name: getSessionFullDetails
+        // accept argument: accept experimenterName, startTimeStamp, endTimeStamp
+        // and return argument: return is in this format: {status: 200,statusDesc:"succesful",data:container,message: 'Unable to populate record into the destination table'};
+        // What the method deos: performs queries on sessiontables. Peforms the queries for the first query question of the coding chanllange 
     getSessionFullDetails:async function(req,res)
     {
         try
         {
             let startTimeStamp = "";
+
             let endTimeStamp = "";
+
             let experimenterName ="";
+
+            //Java equivalent generic class
             let container = new Container();
            
             if(Object.entries(req.body).length !== 0)
@@ -478,6 +531,7 @@ let timeSeriesNeuralRoute =
                 endTimeStamp = moment(req.body.endDate+"T23:59:00+00:00").utcOffset("00:00").format('YYYY-MM-DDTHH:mm:ssZ:Z');
 
                 experimenterName = req.body.experimenterName;
+
             }
             else if(Object.entries(req.query).length !== 0)
             {
@@ -487,8 +541,10 @@ let timeSeriesNeuralRoute =
                 endTimeStamp = moment(req.query.endDate+"T23:59:00+00:00").utcOffset("00:00").format('YYYY-MM-DDTHH:mm:ssZ:Z');
     
                 experimenterName = req.query.experimenterName
+
             }
-                 
+            
+            //performs postgresql select statement
             await sequelize.query('select id, animal_date_of_birth,animal_id,animal_sex,animal_species,animal_weight,'
 			    + 'experimenter_name,microscope_ex_led_power,microscope_og_led_power,sampling_rate,session_id,recording_start_time,acquisition_sw_version from sessionstables '
 			    + 'where experimenter_name=? and (recording_start_time BETWEEN ? AND ?)',
@@ -531,6 +587,13 @@ let timeSeriesNeuralRoute =
         }
     },
 
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+        // Function name: getFirstTwoCellsNeuralData
+        // accept argument: accept sessionId
+        // and return argument: return is in this format: {status: 200,statusDesc:"succesful",data:container,message: 'Unable to populate record into the destination table'};
+        // What the method deos: performs queries on gpiostables and cellstables. Peforms the queries for the second select query question of the coding chanllange 
+    
     getFirstTwoCellsNeuralData:async function(req,res)
     {
         try
@@ -562,6 +625,7 @@ let timeSeriesNeuralRoute =
           
             }
            
+             //performs postgresql select statement
             await sequelize.query('select cast(channels as NUMERIC(4,2)) from  gpiostables where session_id=?',
                 { replacements: [session_id], type: sequelize.QueryTypes.SELECT })
                 .then(gposDetails => 
@@ -586,7 +650,7 @@ let timeSeriesNeuralRoute =
                     return;
                 });
 
-
+                 //performs postgresql select statement
                 await sequelize.query('select cast(frames as NUMERIC(4,2)), cell_id from cellstables where session_id=? and (cell_id=1 or cell_id=2) order by cell_id',
                 { replacements: [session_id], type: sequelize.QueryTypes.SELECT })
                 .then(cellsnDetails => 
@@ -653,6 +717,13 @@ let timeSeriesNeuralRoute =
         }
     },
 
+     //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+        // Function name: getBoutMoment
+        // accept argument: accept sessionId
+        // and return argument: return is in this format: {status: 200,statusDesc:"succesful",data:container,message: 'Unable to populate record into the destination table'};
+        // What the method deos: performs queries on gpiostables and cellstables. Peforms the queries for the third select query question of the coding chanllange 
+    
     getBoutMoment:async function(req,res)
     {
         try
@@ -688,7 +759,7 @@ let timeSeriesNeuralRoute =
           
             }
 
-            
+            //performs postgresql select statement
             await sequelize.query('select cast(channels as NUMERIC(4,2)) from  gpiostables where session_id=?',
             { replacements: [session_id], type: sequelize.QueryTypes.SELECT })
             .then(gposDetails => 
@@ -710,6 +781,7 @@ let timeSeriesNeuralRoute =
                 return;
             });
 
+            //performs postgresql select statement
             await sequelize.query('select cast(frames as NUMERIC(4,2)), cell_id from cellstables where session_id=? and cell_id=1',
             { replacements: [session_id], type: sequelize.QueryTypes.SELECT })
             .then(cellsDetails => 

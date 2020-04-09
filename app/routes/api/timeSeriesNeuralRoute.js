@@ -4,7 +4,7 @@ const router = express.Router();
 require('dotenv').config('./app');
 const timeSeriesNeuralRepo = require('../../repo/timeSeriesNeuralRepo');
 
-
+// importing session files by file location name
 router.post("/neuron/importSessionsFromLocation", async (req, res) => 
 {
     try 
@@ -23,6 +23,7 @@ router.post("/neuron/importSessionsFromLocation", async (req, res) =>
 });
 
 
+// importing gpio files by file location name
 router.post("/neuron/importGpiosCSVFromFileLocation", async (req, res) => 
 {
     try 
@@ -41,7 +42,7 @@ router.post("/neuron/importGpiosCSVFromFileLocation", async (req, res) =>
     }
 });
 
-
+// importing cell files by file location name
 router.post("/neuron/importCellsCSVFromLocation",async (req, res) => 
 {
     try 
@@ -60,6 +61,8 @@ router.post("/neuron/importCellsCSVFromLocation",async (req, res) =>
     }
 });
 
+
+// to get query details for the first select query question of the coding challenge
 router.get("/neuron/sessionFullDetails",async (req, res) => 
 {
     try 
@@ -78,6 +81,7 @@ router.get("/neuron/sessionFullDetails",async (req, res) =>
     }
 });
 
+// to get query details for the second select query question of the coding challenge
 router.get("/neuron/firstTwoCellsNeuralData",async (req, res) => 
 {
     try 
@@ -96,6 +100,8 @@ router.get("/neuron/firstTwoCellsNeuralData",async (req, res) =>
     }
 });
 
+
+// to get query details for the third select query question of the coding challenge
 router.get("/neuron/boutMomentDetails",async (req, res) => 
 {
     try 
