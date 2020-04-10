@@ -60,7 +60,7 @@ let timeSeriesNeuralRoute =
             let extension = path.extname(fileName)
             if(extension==null || extension!=".json")
             {
-                
+        
                 let errorMap = {"File Error": "Invalid fie type. Please ensure that your is json file"};
                   
                 container.setObjectType("Error Object"); 
@@ -203,9 +203,11 @@ let timeSeriesNeuralRoute =
                 }
            
             
-                return {status: 200,statusDesc:"succesful",data:container,message: 'Record Populated into the table Successfully'};
+              
+            }
+            
+            return {status: 200,statusDesc:"succesful",data:container,message: 'Record Populated into the table Successfully'};
            
-            }   
         }
         catch(err)
         {
@@ -377,10 +379,10 @@ let timeSeriesNeuralRoute =
                 }
            
             
-                return {status: 200,statusDesc:"succesful",data:container,message: 'Record Populated into the table Successfully'};
             }
         
-                   
+            return {status: 200,statusDesc:"succesful",data:container,message: 'Record Populated into the table Successfully'};
+                 
         }
         catch(err)
         {
@@ -549,8 +551,6 @@ let timeSeriesNeuralRoute =
             }
            
             
-            return {status: 200,statusDesc:"succesful",data:container,message: 'Record Populated into the table Successfully'};
-           
             } 
                    
         }
@@ -560,7 +560,8 @@ let timeSeriesNeuralRoute =
             return res.status(500).send({ message: err.message });
         }  
         
-      
+        return {status: 200,statusDesc:"succesful",data:container,message: 'Record Populated into the table Successfully'};
+           
 
     },
 
