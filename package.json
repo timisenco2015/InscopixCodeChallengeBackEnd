@@ -7,7 +7,7 @@
     "test": "jest --watchAll"
   },
   "dependencies": {
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "debug": "^2.6.9",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
